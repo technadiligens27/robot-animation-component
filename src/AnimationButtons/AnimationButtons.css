@@ -1,0 +1,80 @@
+.animation-buttons {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  padding: 10px;
+
+  background: rgba(20, 20, 20, 0.5);
+
+  border: 1px solid
+    rgba(255, 255, 255, 0.2);
+
+  border-radius: 16px;
+
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  transform: translateX(-50%);
+
+  z-index: 20;
+}
+
+.animation-button {
+  min-width: 75px;
+
+  padding: 10px 15px;
+
+  color: white;
+
+  background: rgba(255, 255, 255, 0.1);
+
+  border: 1px solid
+    rgba(255, 255, 255, 0.25);
+
+  border-radius: 10px;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.animation-button:hover {
+  background: rgba(255, 157, 0, 0.7);
+
+  transform: translateY(-2px);
+}
+
+.animation-button-active {
+  background: #ff9d00;
+
+  border-color: #ffb74d;
+}
+
+@media screen and (max-width: 600px) {
+  .animation-buttons {
+    bottom: 15px;
+    height: 50px;
+    gap: 6px;
+
+    padding: 10px;
+  }
+
+  .animation-button {
+    min-width: 58px;
+
+    padding: 8px 10px;
+
+    font-size: 13px;
+  }
+}
