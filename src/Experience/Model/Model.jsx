@@ -15,9 +15,7 @@ const bloomLights = []
 const Model = () => {
   const { setRobotActions } = useAnimationContext()
 
-  const [isMobile, setIsMobile] = useState(
-    () => window.matchMedia(mobileQuery).matches
-  )
+  const [isMobile, setIsMobile] = useState(() => window.matchMedia(mobileQuery).matches)
 
   const { scene, animations } = useGLTF(modelPath)
   const { actions } = useAnimations(animations, scene)
@@ -97,8 +95,8 @@ const Model = () => {
 
   return (
     <>
-      <group position={[-0.44, -0.82, 0.52]}>
-        <Float
+      <group position={[isMobile ? -0.22 : -0.44, -0.82, 0.52]}>
+          <Float
           speed={3}
           floatIntensity={1.3}
           rotationIntensity={0.2}
@@ -106,7 +104,7 @@ const Model = () => {
         >
           <group
             rotation={[-0.38, 0.35, 0.08, "YXZ"]}
-            scale={isMobile ? 0.6 : 1.11}
+            scale={isMobile ? 0.8 : 1.11}
           >
             <primitive object={scene} />
           </group>

@@ -50,8 +50,8 @@ const Experience = () => {
           environmentIntensity={1}
         />
 
-        <ambientLight intensity={0.3} />
-        <MainLight />
+        <ambientLight intensity={0.5} />
+        {/* <MainLight /> */}
 
         
         <Model />
