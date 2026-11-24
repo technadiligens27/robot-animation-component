@@ -1,27 +1,13 @@
+import { Environment, OrbitControls } from "@react-three/drei"
+import { Canvas } from "@react-three/fiber"
+import * as THREE from "three"
 
-import {
-  ContactShadows,
-  Environment,
-  OrbitControls,
-} from "@react-three/drei";
-
-import { Canvas } from "@react-three/fiber";
-import { useRef } from "react";
-import * as THREE from "three";
-
-import Model from "./Model/Model";
-import "./Experience.css";
-
-// =====================================
-// DIRECTIONAL LIGHT
-// =====================================
+import Model from "./Model/Model"
+import "./Experience.css"
 
 const MainLight = () => {
-  const lightRef = useRef();
-
   return (
     <directionalLight
-      ref={lightRef}
       position={[-242.7, -197.6, 42.4]}
       intensity={5}
       color="#ffffff"
@@ -33,17 +19,10 @@ const MainLight = () => {
       shadow-camera-bottom={-15}
       shadow-bias={-0.0001}
     >
-      <object3D
-        attach="target"
-        position={[1.5, 0.6, -4.0]}
-      />
+      <object3D attach="target" position={[1.5, 0.6, -4.0]} />
     </directionalLight>
-  );
-};
-
-// =====================================
-// EXPERIENCE
-// =====================================
+  )
+}
 
 const Experience = () => {
   return (
@@ -65,33 +44,18 @@ const Experience = () => {
           toneMappingExposure: 1.2,
         }}
       >
-        {/* ENVIRONMENT LIGHTING */}
         <Environment
-          preset="studio"
+          preset="sunset"
+          environmentRotation={[3.89, 0.67, -1.11]}
           environmentIntensity={1}
         />
 
-        {/* GENERAL LIGHTING */}
         <ambientLight intensity={0.3} />
-
-        {/* DIRECTIONAL LIGHT */}
         <MainLight />
 
-        {/* MODEL */}
+        
         <Model />
 
-        {/* SOFT SHADOW */}
-        {/* <ContactShadows
-          position={[0, -3, 0]}
-          opacity={0.4}
-          scale={12}
-          blur={3.5}
-          far={10}
-          resolution={1024}
-          color="#666666"
-        /> */}
-
-        {/* CAMERA CONTROLS */}
         <OrbitControls
           enableDamping
           dampingFactor={0.05}
@@ -100,7 +64,7 @@ const Experience = () => {
         />
       </Canvas>
     </div>
-  );
-};
+  )
+}
 
-export default Experience;
+export default Experience

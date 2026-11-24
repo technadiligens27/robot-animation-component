@@ -1,11 +1,16 @@
-import { useEffect, useState } from "react"
-import { useAnimations, useGLTF } from "@react-three/drei"
-import { useControls } from "leva"
+import { useEffect, useMemo, useState } from "react"
+import { Float, useAnimations, useGLTF } from "@react-three/drei"
+import { EffectComposer, SelectiveBloom } from "@react-three/postprocessing"
 
 import { useAnimationContext } from "../../Context/AnimationContext"
 
-const modelPath = `${import.meta.env.BASE_URL}robot.glb`
+const modelPath = `${import.meta.env.BASE_URL}fun-robot.glb`
 const mobileQuery = "(max-width: 768px)"
+
+const glowMaterialName = "Material.005"
+const glowColor = "#00e5ff"
+const glowIntensity = 4
+const bloomLights = []
 
 const Model = () => {
   const { setRobotActions } = useAnimationContext()
@@ -17,35 +22,26 @@ const Model = () => {
   const { scene, animations } = useGLTF(modelPath)
   const { actions } = useAnimations(animations, scene)
 
-  const { position, rotation, desktopScale, mobileScale } = useControls(
-    "Robot Transform",
-    {
-      position: {
-        label: "Position",
-        value: { x: -0.18, y: 0.71, z: 0.6 },
-        step: 0.01,
-      },
-      rotation: {
-        label: "Rotation (rad)",
-        value: { x: 0.12, y: 1.37, z: -0.07 },
-        step: 0.01,
-      },
-      desktopScale: {
-        label: "Desktop Scale",
-        value: 0.84,
-        min: 0.01,
-        max: 5,
-        step: 0.01,
-      },
-      mobileScale: {
-        label: "Mobile Scale",
-        value: 0.6,
-        min: 0.01,
-        max: 5,
-        step: 0.01,
-      },
-    }
-  )
+  const glowMeshes = useMemo(() => {
+    const meshes = []
+
+    scene.traverse((object) => {
+      if (!object.isMesh) return
+
+      const materials = Array.isArray(object.material)
+        ? object.material
+        : [object.material]
+
+      if (
+        materials.length > 0 &&
+        materials.every((material) => material?.name === glowMaterialName)
+      ) {
+        meshes.push(object)
+      }
+    })
+
+    return meshes
+  }, [scene])
 
   useEffect(() => {
     const mediaQuery = window.matchMedia(mobileQuery)
@@ -69,14 +65,67 @@ const Model = () => {
     }
   }, [actions, setRobotActions])
 
+  useEffect(() => {
+    const glowMaterials = new Set(glowMeshes.flatMap((mesh) => mesh.material))
+    const originalSettings = []
+
+    for (const material of glowMaterials) {
+      if (!material.emissive) continue
+
+      originalSettings.push({
+        material,
+        color: material.emissive.clone(),
+        intensity: material.emissiveIntensity,
+        toneMapped: material.toneMapped,
+      })
+
+      material.emissive.set(glowColor)
+      material.emissiveIntensity = glowIntensity
+      material.toneMapped = false
+      material.needsUpdate = true
+    }
+
+    return () => {
+      for (const { material, color, intensity, toneMapped } of originalSettings) {
+        material.emissive.copy(color)
+        material.emissiveIntensity = intensity
+        material.toneMapped = toneMapped
+        material.needsUpdate = true
+      }
+    }
+  }, [glowMeshes])
+
   return (
-    <group
-      position={[position.x, position.y, position.z]}
-      rotation={[rotation.x, rotation.y, rotation.z]}
-      scale={isMobile ? mobileScale : desktopScale}
-    >
-      <primitive object={scene} />
-    </group>
+    <>
+      <group position={[-0.44, -0.82, 0.52]}>
+        <Float
+          speed={3}
+          floatIntensity={1.3}
+          rotationIntensity={0.2}
+          floatingRange={[-0.1, 0.1]}
+        >
+          <group
+            rotation={[-0.38, 0.35, 0.08, "YXZ"]}
+            scale={isMobile ? 0.6 : 1.11}
+          >
+            <primitive object={scene} />
+          </group>
+        </Float>
+      </group>
+
+      {glowMeshes.length > 0 && (
+        <EffectComposer>
+          <SelectiveBloom
+            selection={glowMeshes}
+            lights={bloomLights}
+            ignoreBackground
+            mipmapBlur
+            luminanceThreshold={1}
+            intensity={0.8}
+          />
+        </EffectComposer>
+      )}
+    </>
   )
 }
 
