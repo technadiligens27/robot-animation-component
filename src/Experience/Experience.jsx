@@ -55,13 +55,13 @@ const Experience = () => {
 
         
         <Model />
-
+{/* 
         <OrbitControls
           enableDamping
           dampingFactor={0.05}
           minDistance={2}
           maxDistance={30}
-        />
+        /> */}
       </Canvas>
     </div>
   )
